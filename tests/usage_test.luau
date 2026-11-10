@@ -152,6 +152,9 @@ expect(cmd["plugin.omp-usage.slack-bad"] == true, "over budget uses the red styl
 expect(text:find("CLAUDE LOCKED", 1, true) ~= nil, "lockout badge missing at 100%", text)
 expect(text:find("Fable", 1, true) ~= nil, "Fable shows when the plan has it", text)
 expect(cmd["plugin.omp-usage.pct-crit"] == true, "100% uses the critical style", text)
+expect(text:find("✻ Claude", 1, true) == nil, "the lockout badge replaces the group name", text)
+expect(text:find("reset 1h", 1, true) == nil, "the lockout badge already counts down, so no second reset segment", text)
+expect(text:find("✦1", 1, true) == nil or select(2, text:gsub("✦1", "")) == 1, "saved resets show once", text)
 
 -- Signed in to Claude only: omp answers Codex with no reports, which hides the group rather than flagging an error.
 text = render(claude(0.4, 0, now_ms + 7 * DAY), { reports = {}, capacity = {} })

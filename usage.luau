@@ -284,15 +284,17 @@ local function compact(n: number): string
 		elseif n >= 1e3 then string.format("%.0fk", n / 1e3) else tostring(n)
 end
 
-local function locked(out: { any }, name: string, five: number?, week: number?, r5: number?, rwk: number?, tail: string?)
+-- The badge replaces the group's name, reset countdown and saved-reset count, so a locked bar stays narrow.
+local function locked(out: { any }, name: string, five: number?, week: number?, r5: number?, rwk: number?, tail: string?): boolean
 	if (five or 0) < 1 and (week or 0) < 1 then
-		return
+		return false
 	end
 	local mins = mins_until(if (week or 0) >= 1 then rwk else r5)
 	table.insert(out, {
 		text = string.format("%s %s %s%s", name, config.labels.locked, if mins then hm(mins) else "", tail or ""),
 		command = P .. "locked",
 	})
+	return true
 end
 
 local function credits_tail(n: number): string?
@@ -325,8 +327,10 @@ function M.segments(out: { any })
 	local show_claude, show_codex = config.shows("claude"), config.shows("codex")
 	local c = claude
 	if c and show_claude then
-		locked(out, "CLAUDE", c.five, c.week, c.five_reset, c.week_reset, credits_tail(c.credits))
-		table.insert(out, { text = "✻ Claude", command = P .. "claude" })
+		local lock = locked(out, "CLAUDE", c.five, c.week, c.five_reset, c.week_reset, credits_tail(c.credits))
+		if not lock then
+			table.insert(out, { text = "✻ Claude", command = P .. "claude" })
+		end
 		bar(out, "5h", c.five, "c5")
 		forecast(out, c.five, c.five_reset, 5 * 3600)
 		bar(out, "wk", c.week, "cwk")
@@ -335,14 +339,14 @@ function M.segments(out: { any })
 			bar(out, "Fable", c.fable, "cf")
 		end
 		local mins = mins_until(c.five_reset)
-		if mins and config.shows("reset") then
+		if mins and config.shows("reset") and not lock then
 			local soon = (c.five or 0) >= config.get("crit") and mins < 30
 			table.insert(out, {
 				text = config.labels.reset .. " " .. hm(mins),
 				command = if soon then P .. "reset-soon" else P .. "reset",
 			})
 		end
-		if c.credits > 0 and config.shows("credits") then
+		if c.credits > 0 and config.shows("credits") and not lock then
 			table.insert(out, { text = "✦" .. c.credits, command = P .. "credits" })
 		end
 		if config.shows("budget") then
@@ -354,14 +358,16 @@ function M.segments(out: { any })
 
 	local x = codex
 	if x and show_codex then
-		locked(out, "CODEX", x.five, x.week, x.five_reset, x.week_reset, credits_tail(x.credits))
-		table.insert(out, { text = "⬢ Codex", command = P .. "codex" })
+		local lock = locked(out, "CODEX", x.five, x.week, x.five_reset, x.week_reset, credits_tail(x.credits))
+		if not lock then
+			table.insert(out, { text = "⬢ Codex", command = P .. "codex" })
+		end
 		bar(out, "5h", x.five, "x5")
 		bar(out, "wk", x.week, "xwk")
 		if x.n then
 			table.insert(out, { text = "×" .. x.n, tone = "muted", command = P .. "refresh" })
 		end
-		if x.credits > 0 and config.shows("credits") then
+		if x.credits > 0 and config.shows("credits") and not lock then
 			table.insert(out, { text = "✦" .. x.credits, command = P .. "credits" })
 		end
 	elseif failed.codex and show_codex then

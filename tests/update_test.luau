@@ -85,6 +85,12 @@ expect(update.newer("0.10.0", "0.9.9"), "versions compare as numbers, not text")
 expect(not update.newer("v0.4.0", "0.4.0"), "a leading v is the same version")
 expect(not update.newer("1.0", "1.0.0"), "missing parts count as 0")
 
+-- This fork starts with the update check off: nothing asks GitHub until the part is turned on.
+update.check(false, cx)
+expect(fetches == 0, "updates start off: no request")
+expect(bar() == "", "updates start off: no ⬆")
+config.answer.part("updates")
+
 -- A newer release: the ⬆ segment and one toast.
 update.check(false, cx)
 expect(fetches == 1, "the first check asks GitHub")

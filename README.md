@@ -80,9 +80,9 @@ You need `omp` signed in to Anthropic and/or OpenAI Codex, so `omp usage` works 
 
 ### Updates
 
-Once a day the plugin checks GitHub for a newer release. When there is one, a blue `⬆ 0.5.0` appears at the start of its segments and a toast tells you once. Clicking it explains how to sync this fork and run `sync.ps1`; it does not replace this fork with the original plugin. **OMP usage: what's new** opens the current release notes.
+In this fork the update check is off by default: it is updated by syncing the fork and running `sync.ps1`, and the check follows the original plugin's releases. Turn the `updates` part on (see [Configuration](#configuration)) to check GitHub once a day; when there is a newer release, a blue `⬆ 0.5.0` appears at the start of the segments and a toast tells you once. Clicking it explains how to sync this fork and run `sync.ps1`; it does not replace this fork with the original plugin. **OMP usage: what's new** opens the current release notes.
 
-To stop checking, hide the `updates` part (see [Configuration](#configuration)) or set `OMP_USAGE_NO_UPDATE_CHECK=1`.
+To keep it off for good even when `updates` is on, set `OMP_USAGE_NO_UPDATE_CHECK=1`.
 
 To hear about releases by e-mail too, use **Watch → Custom → Releases** at the top of this repository.
 
@@ -111,7 +111,7 @@ The plugin reads no credentials. It runs omp, and makes one network request of i
 | `omp stats --json` | Every 5 min |
 | `omp usage --history --json --days 7` | When the dashboard opens, and when you press `r` in it |
 | `omp usage invalidate` | When you click a segment, to skip omp's cache |
-| `GET api.github.com/repos/joaodutra88/tern-omp-usage/releases/latest` | Once a day per machine, no token; off with the `updates` part or `OMP_USAGE_NO_UPDATE_CHECK=1` |
+| `GET api.github.com/repos/joaodutra88/tern-omp-usage/releases/latest` | Only with the `updates` part on, once a day per machine, no token; `OMP_USAGE_NO_UPDATE_CHECK=1` turns it off |
 
 Settings, each day's tokens and cost (for the dashboard), and the last release seen go to the plugin's data folder (`tern.kv`), nowhere else. The status formatter only reads values cached by those calls, because Tern gives a formatter 4 ms.
 

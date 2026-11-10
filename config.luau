@@ -13,7 +13,7 @@ M.PARTS = {
 	reset = true,
 	credits = true,
 	fable = true,
-	updates = true,
+	updates = false, -- this fork is updated by `sync.ps1`; the check would announce the original plugin's releases
 	alerts = true,
 	forecast = true,
 }

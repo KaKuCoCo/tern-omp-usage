@@ -1,4 +1,4 @@
--- Runs update.luau against a fake `tern`: the GitHub answer, the daily cache, the toasts, the reinstall.
+-- Runs update.luau against a fake `tern`: the GitHub answer, daily cache, and update guidance.
 -- Run: luau tests/update_test.luau (from the repository root, or via scripts/check.py).
 
 local store: { [string]: any } = {}
@@ -8,8 +8,6 @@ local fetches = 0
 local release: any = { tag_name = "v0.5.0", html_url = "https://github.com/joaodutra88/tern-omp-usage/releases/tag/v0.5.0" }
 local status = 200
 local ran: { string }? = nil
-local ran_opts: { [string]: any }? = nil
-local install_result = { status = 0, stdout = "", stderr = "" }
 
 local fake = {
 	kv = {
@@ -44,10 +42,8 @@ local fake = {
 		end,
 	},
 	process = {
-		run = function(argv: { string }, opts, done)
+		run = function(argv: { string })
 			ran = argv
-			ran_opts = opts
-			done(install_result, nil)
 		end,
 	},
 	chrome = { refresh = function() end },
@@ -131,18 +127,11 @@ update.check(true, cx)
 expect(toasts[#toasts][1] == "error", "a failed forced check is an error toast")
 status = 200
 
--- Reinstall: extras.luau moves to the data folder first, then tern replaces the package.
-files["extras.luau"] = "return {}"
+-- A managed update must not replace this fork with the original plugin.
 update.install(cx)
-expect(files["DATA/extras.luau"] == "return {}", "extras.luau is copied to the data folder before installing")
-expect(ran ~= nil and ran[2] == "plugin" and ran[3] == "install" and ran[5] == "--force", "the update reinstalls with --force")
-expect(ran ~= nil and ran[4] == "https://github.com/joaodutra88/tern-omp-usage", "from the repository")
--- Windows refuses to replace a folder a process runs in, and the default cwd is the plugin's own folder.
-expect(ran_opts ~= nil and ran_opts.cwd == "DATA", "the reinstall runs outside the plugin folder")
-
-install_result = { status = 1, stdout = "", stderr = "omp-usage is linked (C:\\src\\tern-omp-usage); use unlink first\n" }
-update.install(cx)
-expect(toasts[#toasts][2] == "Linked checkout: update it with git pull", "a linked checkout points to git pull")
+expect(ran == nil, "the update does not start an upstream reinstall")
+expect(toasts[#toasts][1] == "info", "the managed update shows guidance")
+expect(string.find(toasts[#toasts][3], "sync.ps1", 1, true) ~= nil, "the guidance names the sync command")
 
 -- After an update the new version says so once; a first install stays quiet.
 toasts = {}

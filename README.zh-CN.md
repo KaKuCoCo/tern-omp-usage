@@ -1,3 +1,5 @@
+> 此版本由 `tern-omp-settings` 管理。更新按钮仅显示维护指引，不会重装插件；请同步 fork，在 `plugins/fork/tern-omp-usage` 执行 `git pull`，再运行 `sync.ps1`。下方上游安装和更新说明不适用于此版本。
+
 <div align="center">
 
 <img src="assets/banner.png" width="760" alt="tern-omp-usage：通过 omp 在 Tern 状态栏中显示 Claude 和 Codex 额度">

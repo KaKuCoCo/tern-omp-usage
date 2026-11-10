@@ -1,3 +1,5 @@
+> Esta cópia é gerenciada pelo `tern-omp-settings`. O botão de atualização mostra instruções e não reinstala o plugin. Sincronize o fork, rode `git pull` em `plugins/fork/tern-omp-usage` e execute `sync.ps1`. As instruções de instalação e atualização do projeto original não se aplicam a esta cópia.
+
 <div align="center">
 
 <img src="assets/banner.png" width="760" alt="tern-omp-usage: limites do Claude e do Codex pelo omp, direto na barra de status do Tern">

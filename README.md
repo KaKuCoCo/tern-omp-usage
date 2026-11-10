@@ -72,19 +72,17 @@ These were rendered from canned `omp` replies, so you can see states that don't 
 
 ## Install
 
-```sh
-tern plugin install https://github.com/joaodutra88/tern-omp-usage
+```powershell
+pwsh -File ./sync.ps1 # from the tern-omp-settings repository
 ```
 
 You need `omp` signed in to Anthropic and/or OpenAI Codex, so `omp usage` works in a terminal. The plugin uses the omp that Tern manages (`%LOCALAPPDATA%\Tern\omp\bin\omp.exe` on Windows, `~/Library/Application Support/Tern/omp/bin/omp` on macOS) and falls back to `omp` on `PATH`. If Tern's daemon can't find it, set `OMP_USAGE_BIN` to the full path.
 
 ### Updates
 
-Once a day the plugin checks GitHub for a newer release. When there is one, a blue `⬆ 0.5.0` appears at the start of its segments and a toast tells you once. Click it, or run **OMP usage: update to the latest version**, and the plugin reinstalls itself from this repository (`tern plugin install … --force`). Your settings and your `extras.luau` carry over. After the update a toast names the new version, and **OMP usage: what's new** opens its release notes.
+Once a day the plugin checks GitHub for a newer release. When there is one, a blue `⬆ 0.5.0` appears at the start of its segments and a toast tells you once. Clicking it explains how to sync this fork and run `sync.ps1`; it does not replace this fork with the original plugin. **OMP usage: what's new** opens the current release notes.
 
-A linked checkout (`tern plugin link`) updates with `git pull` instead. To stop checking, hide the `updates` part (see [Configuration](#configuration)) or set `OMP_USAGE_NO_UPDATE_CHECK=1`.
-
-**On 0.3.x?** Those versions have no update check. Run the install command above once with `--force`, and from 0.4.0 on the plugin tells you itself.
+To stop checking, hide the `updates` part (see [Configuration](#configuration)) or set `OMP_USAGE_NO_UPDATE_CHECK=1`.
 
 To hear about releases by e-mail too, use **Watch → Custom → Releases** at the top of this repository.
 
@@ -93,9 +91,9 @@ To hear about releases by e-mail too, use **Watch → Custom → Releases** at t
 Paste this into omp, Claude Code, Codex or any agent that can run commands:
 
 ```text
-Install the Tern plugin https://github.com/joaodutra88/tern-omp-usage for me.
+Install the managed Tern plugin from the tern-omp-settings repository for me.
 1. Check `omp usage --json -p anthropic` (or `-p openai-codex`) works. If it doesn't, help me sign in with omp first.
-2. Run `tern plugin install https://github.com/joaodutra88/tern-omp-usage`.
+2. From tern-omp-settings, run `pwsh -File ./sync.ps1`.
 3. Run `tern plugin list --json` and confirm `omp-usage` has status "ready".
 4. If it isn't ready, read the lines containing `omp-usage` in Tern's log
    (`%LOCALAPPDATA%\Tern\Logs\tern.log` on Windows) and the repo's AGENTS.md, then tell me what is wrong.
@@ -114,9 +112,8 @@ The plugin reads no credentials. It runs omp, and makes one network request of i
 | `omp usage --history --json --days 7` | When the dashboard opens, and when you press `r` in it |
 | `omp usage invalidate` | When you click a segment, to skip omp's cache |
 | `GET api.github.com/repos/joaodutra88/tern-omp-usage/releases/latest` | Once a day per machine, no token; off with the `updates` part or `OMP_USAGE_NO_UPDATE_CHECK=1` |
-| `tern plugin install https://github.com/joaodutra88/tern-omp-usage --force` | Only when you click `⬆` or run the update command |
 
-Settings, each day's tokens and cost (for the dashboard), the last release seen and a copy of your `extras.luau` (made before an update) go to the plugin's data folder (`tern.kv`), nowhere else. The status formatter only reads values cached by those calls, because Tern gives a formatter 4 ms.
+Settings, each day's tokens and cost (for the dashboard), and the last release seen go to the plugin's data folder (`tern.kv`), nowhere else. The status formatter only reads values cached by those calls, because Tern gives a formatter 4 ms.
 
 ## Configuration
 
@@ -168,7 +165,7 @@ They come from the same usage endpoint through omp, every 5 minutes, because Ant
 It includes cache reads, which make up most of an agent's input. The cost is what those tokens would cost at API prices, not what your subscription charges.
 
 **How do I update?**
-Click the blue `⬆` when it shows, or run **OMP usage: update to the latest version**. By hand: `tern plugin install https://github.com/joaodutra88/tern-omp-usage --force`. Versions before 0.4.0 have no update check, and on Windows the 0.4.0 update fails with "The process cannot access the file", so update those once by hand.
+Sync this fork with the original repository on GitHub, run `git pull` in `plugins/fork/tern-omp-usage` of `tern-omp-settings`, then run `pwsh -File ./sync.ps1` from that repository.
 
 **How do I uninstall it?**
 `tern plugin remove omp-usage`.

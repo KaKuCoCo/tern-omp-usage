@@ -1,3 +1,5 @@
+> この版は `tern-omp-settings` で管理します。更新ボタンは手順を表示するだけで再インストールしません。fork を同期し、`plugins/fork/tern-omp-usage` で `git pull` してから `sync.ps1` を実行してください。以下の上流のインストール・更新手順はこの版には適用されません。
+
 <div align="center">
 
 <img src="assets/banner.png" width="760" alt="tern-omp-usage: omp 経由の Claude と Codex の上限を Tern のステータスラインに表示">

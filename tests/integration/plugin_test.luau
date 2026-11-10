@@ -71,9 +71,7 @@ do
 	clean(w)
 end
 
--- The update: a newer release shows the badge, a click reinstalls from GitHub, and the settings and extras.luau
--- survive a package folder that comes back without them. The fake Tern refuses an install whose working
--- directory is the plugin folder, as Windows does.
+-- A newer release remains visible, but updating must use the settings repository.
 do
 	local EXTRAS = 'return { init = function() end, segments = function(out) table.insert(out, { text = "EXTRA " }) end }'
 	local w = H.world({ extras = EXTRAS })
@@ -95,14 +93,11 @@ do
 	w:click("plugin.omp-usage.update")
 	w:run(10000)
 	local toasts = w:toast_texts()
-	expect(not has(toasts, "falhou"), "the reinstall succeeds", toasts)
-	expect(w.installed_from == H.SOURCE, "it installs from the repository", w.installed_from)
-	expect(w.files["extras.luau"] == nil, "the new package has no extras.luau")
+	expect(w.installed_from == nil, "the managed update does not install raw upstream", tostring(w.installed_from))
+	expect(has(toasts, "tern-omp-settings") and has(toasts, "sync.ps1"), "the update explains the managed workflow", toasts)
+	expect(w.files["extras.luau"] == EXTRAS, "the existing extras remain in place")
 	text = w:bar()
-	expect(has(text, "EXTRA"), "extras.luau comes back from the data folder", text)
-	expect(has(text, "sobra"), "the language survives the update", text)
-	expect(not has(text, "⬆"), "the badge is gone", text)
-	expect(has(toasts, "OMP usage atualizado para 9.9.9"), "the new version says it is running", toasts)
+	expect(has(text, "EXTRA") and has(text, "sobra"), "the extras and language remain active", text)
 	w:run(2 * H.FETCH_MS)
 	clean(w)
 end

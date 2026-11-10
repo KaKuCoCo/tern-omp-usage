@@ -1,5 +1,4 @@
--- New versions: a daily look at the latest GitHub release, a ⬆ segment and one toast per version, a one-click
--- reinstall, and a toast after an update. Tern has no update command; installing again with --force is the update.
+-- New versions: a daily GitHub check, a status badge, and managed update guidance.
 local config = require("./config")
 local M = {}
 
@@ -10,7 +9,7 @@ local DAY_S = 86400
 
 M.VERSION = "0.0.0"
 local latest: { version: string, url: string, checked_at: number }? = nil
-local checking, installing = false, false
+local checking = false
 
 -- "v0.10.2" → {0, 10, 2}; versions compare part by part, missing parts are 0.
 local function parts(v: string): { number }
@@ -43,10 +42,6 @@ end
 
 function M.available(): boolean
 	return latest ~= nil and enabled() and M.newer(latest.version, M.VERSION)
-end
-
-local function first_line(text: string?): string
-	return string.match(text or "", "^%s*([^\r\n]*)") or ""
 end
 
 -- One toast per new version, across windows and restarts.
@@ -99,54 +94,8 @@ function M.check(force: boolean?, cx: any?)
 	end
 end
 
-local function tern_bin(): string
-	local local_app = tern.getenv("LOCALAPPDATA")
-	local candidates = {
-		local_app and local_app .. "\\Programs\\Tern\\tern.com",
-		"/Applications/Tern.app/Contents/MacOS/tern",
-	}
-	for _, p in candidates do
-		if p and tern.fs.exists(p) then
-			return p
-		end
-	end
-	return "tern"
-end
-
--- The install replaces the package folder, so a personal extras.luau moves to the data folder first.
-local function keep_extras()
-	if tern.fs.exists("extras.luau") then
-		tern.fs.write(tern.plugin.data .. "/extras.luau", tern.fs.read("extras.luau"))
-	end
-end
-
 function M.install(cx: any)
-	if installing then
-		return
-	end
-	installing = true
-	keep_extras()
-	cx:toast("info", config.labels.updating)
-	local argv = { tern_bin(), "plugin", "install", SOURCE, "--force" }
-	-- The default cwd is this plugin's folder, and Windows can't replace a folder a process is running in.
-	local opts = { timeout_ms = 120000, cwd = tern.plugin.data }
-	local started = pcall(tern.process.run, argv, opts, function(res, later)
-		installing = false
-		if res.status == 0 then
-			return -- the install reloads the plugin; the new version says so when it loads
-		end
-		local where = later or cx
-		local why = first_line(if res.stderr ~= "" then res.stderr else res.stdout)
-		if string.find(why, "is linked", 1, true) then
-			where:toast("info", config.labels.update_linked, why)
-		else
-			where:toast("error", config.labels.update_failed, why)
-		end
-	end)
-	if not started then
-		installing = false
-		cx:toast("error", config.labels.update_failed, "tern plugin install " .. SOURCE .. " --force")
-	end
+	cx:toast("info", "Managed by tern-omp-settings", "Sync the fork, pull plugins/fork/tern-omp-usage, then run sync.ps1.")
 end
 
 -- After an update (not a first install), one toast per window says which version runs now.

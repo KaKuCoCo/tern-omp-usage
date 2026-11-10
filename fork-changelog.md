@@ -1,14 +1,18 @@
 # Fork changelog
 
+上游：[joaodutra88/tern-omp-usage](https://github.com/joaodutra88/tern-omp-usage)
+
 ## 2026-11-10
 
-- Show only the full window while a provider is locked.
-  - The `LOCKED` badge names the provider, counts down to the reset of the window that locks it (the week's when the week is full, else 5h) and carries the saved resets.
-  - Next to it the bar keeps only that window (`wk` or `5h`); the other window, Fable, `reset`, the forecast and `📅` are hidden. Both full: the week wins.
-  - A full 5h or weekly window used to add about 40 columns and pushed the end of the status line off screen.
-- Fix status line spacing in Tern 0.9.14.
-  - Use descendant selectors to restore the gap and margin rules.
-  - A wrapper separates `#statusline` from `.sl-plugins`, so the direct-child selectors no longer match.
-- Keep update notices, but stop the update action from reinstalling the original plugin.
-  - Reinstalling the original repository would discard this fork's changes.
-  - The action now explains how to sync the fork and run `sync.ps1` from tern-omp-settings.
+### Changed
+- 額度鎖定時只顯示鎖定的視窗（`wk` 或 `5h`），隱藏其他欄位。
+  - 原因：鎖定時狀態列多出約 40 欄，把尾端擠出畫面。
+- 更新按鈕改為顯示 fork 更新步驟，不再重裝原始 repo。
+  - 原因：重裝會以原始版本覆蓋 fork 的修改。
+
+### Fixed
+- 修正 Tern 0.9.14 狀態列間距變寬。
+  - 原因：Tern 新增一層 `div.sb-grp`，直接子層選擇器 `#statusline > .sl-plugins` 失效。
+  - 上游：未回報。
+
+## 已移除

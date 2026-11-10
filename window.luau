@@ -89,8 +89,8 @@ end)
 
 tern.css("statusline", [[
 /* Tern spaces plugin segments with a flex gap; zero it and let each segment set its own margin. */
-#statusline > .sl-plugins { gap: 0 !important; }
-#statusline > .sl-plugins > .sl-plugin { margin-left: 6px; }
+#statusline .sl-plugins { gap: 0 !important; }
+#statusline .sl-plugins > .sl-plugin { margin-left: 6px; }
 #statusline .sl-plugin[title^="plugin.omp-usage."] { margin: 0 0 0 6px; padding: 0; }
 #statusline .sl-plugin[title="plugin.omp-usage.claude"] { margin-left: 16px; padding-left: 12px;
   border-left: 1px solid rgb(255 255 255 / 10%); color: #d97757; font-weight: 600; }

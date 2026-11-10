@@ -284,17 +284,19 @@ local function compact(n: number): string
 		elseif n >= 1e3 then string.format("%.0fk", n / 1e3) else tostring(n)
 end
 
--- The badge replaces the group's name, reset countdown and saved-reset count, so a locked bar stays narrow.
-local function locked(out: { any }, name: string, five: number?, week: number?, r5: number?, rwk: number?, tail: string?): boolean
-	if (five or 0) < 1 and (week or 0) < 1 then
-		return false
+-- The badge names the provider, counts down to the locking window's reset (the week's when it is full) and
+-- carries the saved resets, so a locked bar shows only that window's bar after it.
+local function locked(out: { any }, name: string, five: number?, week: number?, r5: number?, rwk: number?, tail: string?): string?
+	local week_full = (week or 0) >= 1
+	if (five or 0) < 1 and not week_full then
+		return nil
 	end
-	local mins = mins_until(if (week or 0) >= 1 then rwk else r5)
+	local mins = mins_until(if week_full then rwk else r5)
 	table.insert(out, {
 		text = string.format("%s %s %s%s", name, config.labels.locked, if mins then hm(mins) else "", tail or ""),
 		command = P .. "locked",
 	})
-	return true
+	return if week_full then "week" else "five"
 end
 
 local function credits_tail(n: number): string?
@@ -328,29 +330,33 @@ function M.segments(out: { any })
 	local c = claude
 	if c and show_claude then
 		local lock = locked(out, "CLAUDE", c.five, c.week, c.five_reset, c.week_reset, credits_tail(c.credits))
-		if not lock then
+		if lock == "week" then
+			bar(out, "wk", c.week, "cwk")
+		elseif lock == "five" then
+			bar(out, "5h", c.five, "c5")
+		else
 			table.insert(out, { text = "✻ Claude", command = P .. "claude" })
-		end
-		bar(out, "5h", c.five, "c5")
-		forecast(out, c.five, c.five_reset, 5 * 3600)
-		bar(out, "wk", c.week, "cwk")
-		forecast(out, c.week, c.week_reset, 7 * 86400)
-		if c.fable and config.shows("fable") then
-			bar(out, "Fable", c.fable, "cf")
-		end
-		local mins = mins_until(c.five_reset)
-		if mins and config.shows("reset") and not lock then
-			local soon = (c.five or 0) >= config.get("crit") and mins < 30
-			table.insert(out, {
-				text = config.labels.reset .. " " .. hm(mins),
-				command = if soon then P .. "reset-soon" else P .. "reset",
-			})
-		end
-		if c.credits > 0 and config.shows("credits") and not lock then
-			table.insert(out, { text = "✦" .. c.credits, command = P .. "credits" })
-		end
-		if config.shows("budget") then
-			slack_segment(out, c.week, c.week_reset)
+			bar(out, "5h", c.five, "c5")
+			forecast(out, c.five, c.five_reset, 5 * 3600)
+			bar(out, "wk", c.week, "cwk")
+			forecast(out, c.week, c.week_reset, 7 * 86400)
+			if c.fable and config.shows("fable") then
+				bar(out, "Fable", c.fable, "cf")
+			end
+			local mins = mins_until(c.five_reset)
+			if mins and config.shows("reset") then
+				local soon = (c.five or 0) >= config.get("crit") and mins < 30
+				table.insert(out, {
+					text = config.labels.reset .. " " .. hm(mins),
+					command = if soon then P .. "reset-soon" else P .. "reset",
+				})
+			end
+			if c.credits > 0 and config.shows("credits") then
+				table.insert(out, { text = "✦" .. c.credits, command = P .. "credits" })
+			end
+			if config.shows("budget") then
+				slack_segment(out, c.week, c.week_reset)
+			end
 		end
 	elseif failed.claude and show_claude then
 		table.insert(out, { text = "✻ Claude ?", tone = "error", command = P .. "refresh" })
@@ -359,11 +365,15 @@ function M.segments(out: { any })
 	local x = codex
 	if x and show_codex then
 		local lock = locked(out, "CODEX", x.five, x.week, x.five_reset, x.week_reset, credits_tail(x.credits))
-		if not lock then
+		if lock == "week" then
+			bar(out, "wk", x.week, "xwk")
+		elseif lock == "five" then
+			bar(out, "5h", x.five, "x5")
+		else
 			table.insert(out, { text = "⬢ Codex", command = P .. "codex" })
+			bar(out, "5h", x.five, "x5")
+			bar(out, "wk", x.week, "xwk")
 		end
-		bar(out, "5h", x.five, "x5")
-		bar(out, "wk", x.week, "xwk")
 		if x.n then
 			table.insert(out, { text = "×" .. x.n, tone = "muted", command = P .. "refresh" })
 		end

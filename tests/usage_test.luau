@@ -143,18 +143,45 @@ expect(text:find("🔥 2M tokens", 1, true) ~= nil, "today's tokens missing", te
 expect(text:find("💸 $12", 1, true) ~= nil, "today's cost missing", text)
 expect(cmd["plugin.omp-usage.locked"] == nil, "nothing is at 100%, no lockout badge", text)
 
--- 100% of the week with only today unlocked: over budget, and Claude is locked.
-text, cmd = render(claude(0.5, 1, now_ms + 7 * DAY, {
-	{ id = "anthropic:7d:fable", amount = { usedFraction = 0.1 }, window = { resetsAt = now_ms + 7 * DAY } },
-}))
-expect(text:find("📅 over", 1, true) ~= nil, "budget should be 'over' at 100% weekly use", text)
+-- 90% of the week with only today unlocked: over budget, but not locked.
+text, cmd = render(claude(0.5, 0.9, now_ms + 7 * DAY))
+expect(text:find("📅 over", 1, true) ~= nil, "budget should be 'over' when spending ahead of the week", text)
 expect(cmd["plugin.omp-usage.slack-bad"] == true, "over budget uses the red style", text)
-expect(text:find("CLAUDE LOCKED", 1, true) ~= nil, "lockout badge missing at 100%", text)
-expect(text:find("Fable", 1, true) ~= nil, "Fable shows when the plan has it", text)
+expect(cmd["plugin.omp-usage.locked"] == nil, "90% is not a lockout", text)
+
+local function fable(used: number)
+	return { { id = "anthropic:7d:fable", amount = { usedFraction = used }, window = { resetsAt = now_ms + 7 * DAY } } }
+end
+local no_codex = { reports = {}, capacity = {} } -- keeps Codex's own bars out of the Claude assertions
+
+-- Week full: the badge counts down to the week's reset and the bar shows only wk.
+text, cmd = render(claude(0.5, 1, now_ms + 7 * DAY, fable(0.1)), no_codex)
+expect(text:find("CLAUDE LOCKED [67]d%d%dh") ~= nil, "badge should count down to the week's reset", text)
 expect(cmd["plugin.omp-usage.pct-crit"] == true, "100% uses the critical style", text)
-expect(text:find("✻ Claude", 1, true) == nil, "the lockout badge replaces the group name", text)
-expect(text:find("reset 1h", 1, true) == nil, "the lockout badge already counts down, so no second reset segment", text)
-expect(text:find("✦1", 1, true) == nil or select(2, text:gsub("✦1", "")) == 1, "saved resets show once", text)
+expect(text:find("wk", 1, true) ~= nil and text:find("100%", 1, true) ~= nil, "the full week bar stays", text)
+for _, gone in { "5h", "50%", "Fable", "10%", "✻ Claude", "reset", "📅" } do
+	expect(text:find(gone, 1, true) == nil, "'" .. gone .. "' must be hidden while the week is locked", text)
+end
+expect(select(2, text:gsub("✦1", "")) == 1, "saved resets show once, in the badge", text)
+
+-- 5h full: the badge counts down to the 5h reset and the bar shows only 5h.
+text = render(claude(1, 0.38, now_ms + 7 * DAY, fable(0.13)), no_codex)
+expect(text:find("CLAUDE LOCKED 1h%d%dm") ~= nil, "badge should count down to the 5h reset", text)
+expect(text:find("5h", 1, true) ~= nil and text:find("100%", 1, true) ~= nil, "the full 5h bar stays", text)
+for _, gone in { "wk", "38%", "Fable", "13%", "reset", "📅" } do
+	expect(text:find(gone, 1, true) == nil, "'" .. gone .. "' must be hidden while 5h is locked", text)
+end
+
+-- Both full: the week decides.
+text = render(claude(1, 1, now_ms + 7 * DAY), no_codex)
+expect(text:find("CLAUDE LOCKED [67]d%d%dh") ~= nil and text:find("5h", 1, true) == nil, "a full week wins over a full 5h", text)
+
+-- Codex follows the same rule: its week is full, so its 5h bar (25%) and name go.
+codex.capacity["openai-codex"][2].usedAccounts = 2
+text = render(claude(0.4, 0, now_ms + 7 * DAY))
+expect(text:find("CODEX LOCKED", 1, true) ~= nil, "Codex lockout badge missing", text)
+expect(text:find("⬢ Codex", 1, true) == nil and text:find("25%", 1, true) == nil, "only the full Codex window shows", text)
+codex.capacity["openai-codex"][2].usedAccounts = 1
 
 -- Signed in to Claude only: omp answers Codex with no reports, which hides the group rather than flagging an error.
 text = render(claude(0.4, 0, now_ms + 7 * DAY), { reports = {}, capacity = {} })

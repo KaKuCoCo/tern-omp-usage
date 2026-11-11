@@ -95,11 +95,11 @@ tern.css("statusline", [[
 #statusline .sl-plugins > .sl-plugin { margin-left: 6px; }
 #statusline .sl-plugin[title^="plugin.omp-usage."] { margin: 0 0 0 6px; padding: 0; }
 #statusline .sl-plugin[title="plugin.omp-usage.claude"] { margin-left: 16px; padding-left: 12px;
-  border-left: 1px solid var(--l2); color: var(--t1); font-weight: 600; }
+  border-left: 1px solid var(--l2); color: var(--ink-pen); font-weight: 600; }
 #statusline .sl-plugin[title="plugin.omp-usage.codex"] { margin-left: 16px; padding-left: 12px;
-  border-left: 1px solid var(--l2); color: var(--t1); font-weight: 700; }
+  border-left: 1px solid var(--l2); color: var(--accent-ink); font-weight: 700; }
 #statusline .sl-plugin[title="plugin.omp-usage.today"] { margin-left: 16px; padding-left: 12px;
-  border-left: 1px solid var(--l2); color: var(--t2); font-weight: 600; }
+  border-left: 1px solid var(--l2); color: var(--warn); font-weight: 600; }
 #statusline .sl-plugin[title="plugin.omp-usage.cost"] { margin-left: 8px; padding: 0 6px; border-radius: 4px;
   color: var(--accent-ink); background: rgb(from var(--accent) r g b / 12%); font-weight: 700; }
 #statusline .sl-plugin[title="plugin.omp-usage.credits"] { color: var(--accent-ink); }

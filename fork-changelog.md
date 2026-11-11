@@ -2,6 +2,12 @@
 
 上游：[joaodutra88/tern-omp-usage](https://github.com/joaodutra88/tern-omp-usage)
 
+## 2026-11-11
+
+### Fixed
+- 還原 `Claude`、`Codex`、`today` 標籤的顏色：Claude 用 `--ink-pen`（橘），Codex 用 `--accent-ink`（藍），today 用 `--warn`（橘黃）。
+  - 原因：上一版改用 token 時，三者被改成 `--t1`／`--t2`，變成沒有色彩的白灰字。
+
 ## 2026-11-10
 
 ### Changed

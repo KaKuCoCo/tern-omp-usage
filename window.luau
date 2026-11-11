@@ -89,6 +89,7 @@ end)
 
 tern.css("statusline", [[
 /* Tern spaces plugin segments with a flex gap; zero it and let each segment set its own margin.
+   Descendant, not child: since Tern 0.9.16 .sl-plugins sits inside a .sb-grp.
    Colors are Tern's tokens (--ok, --warn, --bad, --accent, --t1..t4, --l2), so light, dark and user themes follow.
    White text sits only on the *-fill tokens, which are made for it. */
 #statusline .sl-plugins { gap: 0 !important; }

@@ -21,9 +21,5 @@
 - `updates` 預設關閉。
   - 原因：更新檢查追蹤原作者的 releases，fork 由 `sync.ps1` 更新，`⬆` 會誤導。
 
-### Fixed
-- 修正 Tern 0.9.14 狀態列間距變寬。
-  - 原因：Tern 新增一層 `div.sb-grp`，直接子層選擇器 `#statusline > .sl-plugins` 失效。
-  - 上游：未回報。
-
 ## 已移除
+- 2026-11-10 修正 Tern 0.9.14 狀態列間距變寬（`#statusline > .sl-plugins` 改後代選擇器）：上游 0.4.2 已修好，合併上游 0.4.3 時移除。

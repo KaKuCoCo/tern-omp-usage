@@ -5,8 +5,8 @@
 ## 2026-11-11
 
 ### Fixed
-- 還原 `Claude`、`Codex`、`today` 標籤的顏色：Claude 用 `--ink-pen`（橘），Codex 用 `--accent-ink`（藍），today 用 `--warn`（橘黃）。
-  - 原因：上一版改用 token 時，三者被改成 `--t1`／`--t2`，變成沒有色彩的白灰字。
+- 還原狀態列標籤的顏色：Claude 用 `--ink-pen`（橘），Codex 用 `--accent-ink`（藍），today 用 `--warn`（橘黃），cost 用 `--ok`（綠），credits `✦` 用 `--live`（紫）。
+  - 原因：改用 token 時，前三者被改成 `--t1`／`--t2` 變白灰字，cost 與 credits 被誤換成藍色的 `--accent-ink`，原本是綠與紫。
 
 ## 2026-11-10
 

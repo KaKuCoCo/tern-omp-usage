@@ -101,8 +101,8 @@ tern.css("statusline", [[
 #statusline .sl-plugin[title="plugin.omp-usage.today"] { margin-left: 16px; padding-left: 12px;
   border-left: 1px solid var(--l2); color: var(--warn); font-weight: 600; }
 #statusline .sl-plugin[title="plugin.omp-usage.cost"] { margin-left: 8px; padding: 0 6px; border-radius: 4px;
-  color: var(--accent-ink); background: rgb(from var(--accent) r g b / 12%); font-weight: 700; }
-#statusline .sl-plugin[title="plugin.omp-usage.credits"] { color: var(--accent-ink); }
+  color: var(--ok); background: rgb(from var(--ok) r g b / 12%); font-weight: 700; }
+#statusline .sl-plugin[title="plugin.omp-usage.credits"] { color: var(--live); }
 #statusline .sl-plugin[title="plugin.omp-usage.slack-ok"] { margin-left: 10px; padding: 0 6px; border-radius: 4px;
   color: var(--ok); background: rgb(from var(--ok) r g b / 12%); font-weight: 700; }
 #statusline .sl-plugin[title="plugin.omp-usage.slack-bad"] { margin-left: 10px; padding: 0 6px; border-radius: 4px;

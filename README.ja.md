@@ -137,7 +137,7 @@ Install the Tern plugin https://github.com/joaodutra88/tern-omp-usage for me.
 | **OMP usage: dashboard** | ダッシュボードを開きます。このウィンドウにすでにある場合はそこにフォーカスします。 |
 | **OMP usage: what's new** | 実行中のバージョンのリリースノートを開きます。 |
 
-Tern のデーモンが `omp` を見つけられない場合は、環境変数 `OMP_USAGE_BIN` にフルパスを設定してください。色は `window.luau` の末尾にある通常の CSS で設定します。各セグメントは `#statusline .sl-plugin[title="plugin.omp-usage.<name>"]` です。
+Tern のデーモンが `omp` を見つけられない場合は、環境変数 `OMP_USAGE_BIN` にフルパスを設定してください。色は `window.luau` の末尾にある通常の CSS で設定します。各セグメントは `#widgetbar .wg-status-chip[title="plugin.omp-usage.<name>"]` です。
 
 ### 言語を変更する
 

@@ -130,7 +130,7 @@ Open the command palette and type `OMP usage`. Settings are kept in the plugin's
 | **OMP usage: dashboard** | Opens the dashboard, or focuses it when this window already has one. |
 | **OMP usage: what's new** | Opens the release notes of the version you run. |
 
-If Tern's daemon can't find `omp`, set the `OMP_USAGE_BIN` environment variable to its full path. Colors are plain CSS at the bottom of `window.luau`. Each segment is `#statusline .sl-plugin[title="plugin.omp-usage.<name>"]`.
+If Tern's daemon can't find `omp`, set the `OMP_USAGE_BIN` environment variable to its full path. Colors are plain CSS at the bottom of `window.luau`. Each segment is `#widgetbar .wg-status-chip[title="plugin.omp-usage.<name>"]`.
 
 ### In your language
 

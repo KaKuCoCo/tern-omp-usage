@@ -2,6 +2,13 @@
 
 上游：[joaodutra88/tern-omp-usage](https://github.com/joaodutra88/tern-omp-usage)
 
+## 2026-11-12
+
+### Fixed
+- 狀態列 CSS 改選 `#widgetbar .wg-status-chip[title=…]`，並隱藏 `.wg-status-dot`、去掉 chip 底色與內距。
+  - 原因：Tern 0.9.17 把外掛片段畫成 widget bar 狀態 widget 裡的 pill（`span.wg-status-chip`，前面帶圓點），`#statusline .sl-plugin` 選擇器失效，進度點與百分比被拆成一顆顆 pill。
+  - 上游：未回報。
+
 ## 2026-11-11
 
 ### Fixed

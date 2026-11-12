@@ -88,46 +88,49 @@ tern.timer(TICK_MS, function()
 end)
 
 tern.css("statusline", [[
-/* Tern spaces plugin segments with a flex gap; zero it and let each segment set its own margin.
-   Descendant, not child: since Tern 0.9.16 .sl-plugins sits inside a .sb-grp.
+/* Tern draws plugin segments as chips inside the widget bar's status widget: span.wg-status-chip, a pill with a
+   status dot (span.wg-status-dot) and the text (span.wg-status-text), 4px apart. Our segments are inline text,
+   so drop the pill and the dot and style each by its title (the `command`). The widget's 4px gap stays; a
+   negative margin glues the bar dots together.
    Colors are Tern's tokens (--ok, --warn, --bad, --accent, --t1..t4, --l2), so light, dark and user themes follow.
    White text sits only on the *-fill tokens, which are made for it. */
-#statusline .sl-plugins { gap: 0 !important; }
-#statusline .sl-plugins > .sl-plugin { margin-left: 6px; }
-#statusline .sl-plugin[title^="plugin.omp-usage."] { margin: 0 0 0 6px; padding: 0; }
-#statusline .sl-plugin[title="plugin.omp-usage.claude"] { margin-left: 16px; padding-left: 12px;
+#widgetbar .wg-status-chip[title^="plugin.omp-usage."] { margin: 0; padding: 0; gap: 0; background: transparent;
+  border-radius: 0; }
+#widgetbar .wg-status-chip[title^="plugin.omp-usage."] .wg-status-dot { display: none; }
+#widgetbar .wg-status-chip[title^="plugin.omp-usage."] .wg-status-text { color: inherit; }
+#widgetbar .wg-status-chip[title="plugin.omp-usage.claude"] { margin-left: 12px; padding-left: 12px;
   border-left: 1px solid var(--l2); color: var(--ink-pen); font-weight: 600; }
-#statusline .sl-plugin[title="plugin.omp-usage.codex"] { margin-left: 16px; padding-left: 12px;
+#widgetbar .wg-status-chip[title="plugin.omp-usage.codex"] { margin-left: 12px; padding-left: 12px;
   border-left: 1px solid var(--l2); color: var(--accent-ink); font-weight: 700; }
-#statusline .sl-plugin[title="plugin.omp-usage.today"] { margin-left: 16px; padding-left: 12px;
+#widgetbar .wg-status-chip[title="plugin.omp-usage.today"] { margin-left: 12px; padding-left: 12px;
   border-left: 1px solid var(--l2); color: var(--warn); font-weight: 600; }
-#statusline .sl-plugin[title="plugin.omp-usage.cost"] { margin-left: 8px; padding: 0 6px; border-radius: 4px;
+#widgetbar .wg-status-chip[title="plugin.omp-usage.cost"] { padding: 0 6px; border-radius: 4px;
   color: var(--ok); background: rgb(from var(--ok) r g b / 12%); font-weight: 700; }
-#statusline .sl-plugin[title="plugin.omp-usage.credits"] { color: var(--live); }
-#statusline .sl-plugin[title="plugin.omp-usage.slack-ok"] { margin-left: 10px; padding: 0 6px; border-radius: 4px;
+#widgetbar .wg-status-chip[title="plugin.omp-usage.credits"] { color: var(--live); }
+#widgetbar .wg-status-chip[title="plugin.omp-usage.slack-ok"] { margin-left: 6px; padding: 0 6px; border-radius: 4px;
   color: var(--ok); background: rgb(from var(--ok) r g b / 12%); font-weight: 700; }
-#statusline .sl-plugin[title="plugin.omp-usage.slack-bad"] { margin-left: 10px; padding: 0 6px; border-radius: 4px;
+#widgetbar .wg-status-chip[title="plugin.omp-usage.slack-bad"] { margin-left: 6px; padding: 0 6px; border-radius: 4px;
   color: var(--bad); background: rgb(from var(--bad) r g b / 18%); font-weight: 700; animation: omppulse 1.2s ease-in-out infinite; }
-#statusline .sl-plugin[title="plugin.omp-usage.reset"] { color: var(--t3); }
-#statusline .sl-plugin[title="plugin.omp-usage.reset-soon"] { color: var(--ok); font-weight: 600; }
-#statusline .sl-plugin[title="plugin.omp-usage.eta"] { margin-left: 4px; color: var(--warn); font-weight: 600; }
-#statusline .sl-plugin[title="plugin.omp-usage.locked"] { margin-left: 16px; color: white; background: var(--bad-fill);
-  padding: 0 6px; border-radius: 4px; font-weight: 700; animation: omppulse 0.9s ease-in-out infinite; }
-#statusline .sl-plugin[title^="plugin.omp-usage.dot-"] { margin-left: 0; }
-#statusline .sl-plugin[title="plugin.omp-usage.dot-1"] { margin-left: 6px; color: var(--ok); }
-#statusline .sl-plugin[title="plugin.omp-usage.dot-2"] { color: color-mix(in srgb, var(--ok) 50%, var(--warn)); }
-#statusline .sl-plugin[title="plugin.omp-usage.dot-3"] { color: var(--warn); }
-#statusline .sl-plugin[title="plugin.omp-usage.dot-4"] { color: color-mix(in srgb, var(--warn) 50%, var(--bad)); }
-#statusline .sl-plugin[title="plugin.omp-usage.dot-5"] { color: var(--bad); }
-#statusline .sl-plugin[title="plugin.omp-usage.empty"] { color: var(--t4); }
-#statusline .sl-plugin[title^="plugin.omp-usage.dot-"] + .sl-plugin[title="plugin.omp-usage.empty"] { margin-left: 0; }
-#statusline .sl-plugin[title="plugin.omp-usage.pct-1"] { color: var(--ok); }
-#statusline .sl-plugin[title="plugin.omp-usage.pct-2"] { color: color-mix(in srgb, var(--ok) 50%, var(--warn)); }
-#statusline .sl-plugin[title="plugin.omp-usage.pct-3"] { color: var(--warn); }
-#statusline .sl-plugin[title="plugin.omp-usage.pct-4"] { color: color-mix(in srgb, var(--warn) 50%, var(--bad)); font-weight: 600; }
-#statusline .sl-plugin[title="plugin.omp-usage.pct-crit"] { color: white; font-weight: 700; background: var(--bad-fill);
+#widgetbar .wg-status-chip[title="plugin.omp-usage.reset"] { color: var(--t3); }
+#widgetbar .wg-status-chip[title="plugin.omp-usage.reset-soon"] { color: var(--ok); font-weight: 600; }
+#widgetbar .wg-status-chip[title="plugin.omp-usage.eta"] { margin-left: 0; color: var(--warn); font-weight: 600; }
+#widgetbar .wg-status-chip[title="plugin.omp-usage.locked"] { margin-left: 12px; padding: 0 6px; border-radius: 4px;
+  color: white; background: var(--bad-fill); font-weight: 700; animation: omppulse 0.9s ease-in-out infinite; }
+#widgetbar .wg-status-chip[title^="plugin.omp-usage.dot-"] { margin-left: -4px; }
+#widgetbar .wg-status-chip[title="plugin.omp-usage.dot-1"] { margin-left: 0; color: var(--ok); }
+#widgetbar .wg-status-chip[title="plugin.omp-usage.dot-2"] { color: color-mix(in srgb, var(--ok) 50%, var(--warn)); }
+#widgetbar .wg-status-chip[title="plugin.omp-usage.dot-3"] { color: var(--warn); }
+#widgetbar .wg-status-chip[title="plugin.omp-usage.dot-4"] { color: color-mix(in srgb, var(--warn) 50%, var(--bad)); }
+#widgetbar .wg-status-chip[title="plugin.omp-usage.dot-5"] { color: var(--bad); }
+#widgetbar .wg-status-chip[title="plugin.omp-usage.empty"] { color: var(--t4); }
+#widgetbar .wg-status-chip[title^="plugin.omp-usage.dot-"] + .wg-status-chip[title="plugin.omp-usage.empty"] { margin-left: -4px; }
+#widgetbar .wg-status-chip[title="plugin.omp-usage.pct-1"] { color: var(--ok); }
+#widgetbar .wg-status-chip[title="plugin.omp-usage.pct-2"] { color: color-mix(in srgb, var(--ok) 50%, var(--warn)); }
+#widgetbar .wg-status-chip[title="plugin.omp-usage.pct-3"] { color: var(--warn); }
+#widgetbar .wg-status-chip[title="plugin.omp-usage.pct-4"] { color: color-mix(in srgb, var(--warn) 50%, var(--bad)); font-weight: 600; }
+#widgetbar .wg-status-chip[title="plugin.omp-usage.pct-crit"] { color: white; font-weight: 700; background: var(--bad-fill);
   padding: 0 4px; border-radius: 3px; animation: omppulse 1.2s ease-in-out infinite; }
-#statusline .sl-plugin[title="plugin.omp-usage.update"] { margin-left: 10px; padding: 0 6px; border-radius: 4px;
+#widgetbar .wg-status-chip[title="plugin.omp-usage.update"] { margin-left: 6px; padding: 0 6px; border-radius: 4px;
   color: white; background: var(--accent-fill); font-weight: 700; }
 @keyframes omppulse { 50% { opacity: 0.35; } }
 ]])

@@ -137,7 +137,7 @@ Install the Tern plugin https://github.com/joaodutra88/tern-omp-usage for me.
 | **OMP usage: dashboard** | 打开仪表盘；如果当前窗口已有仪表盘，则切换到它。 |
 | **OMP usage: what's new** | 打开你正在运行的版本的发布说明。 |
 
-如果 Tern 的守护进程找不到 `omp`，请将 `OMP_USAGE_BIN` 环境变量设置为其完整路径。颜色是 `window.luau` 底部的普通 CSS。每个片段对应 `#statusline .sl-plugin[title="plugin.omp-usage.<name>"]`。
+如果 Tern 的守护进程找不到 `omp`，请将 `OMP_USAGE_BIN` 环境变量设置为其完整路径。颜色是 `window.luau` 底部的普通 CSS。每个片段对应 `#widgetbar .wg-status-chip[title="plugin.omp-usage.<name>"]`。
 
 ### 使用你的语言
 

@@ -1,4 +1,5 @@
--- New versions: a daily GitHub check, a status badge, and managed update guidance.
+-- New versions: a daily GitHub check, a ⬆ widget and one toast per version, managed update guidance (this fork
+-- is updated by tern-omp-settings' sync.ps1, never by reinstalling the original), and a toast after an update.
 local config = require("./config")
 local M = {}
 
@@ -98,7 +99,8 @@ function M.install(cx: any)
 	cx:toast("info", "Managed by tern-omp-settings", "Sync the fork, pull plugins/fork/tern-omp-usage, then run sync.ps1.")
 end
 
--- After an update (not a first install), one toast per window says which version runs now.
+-- After an update (not a first install), one toast per window says which version runs now. Coming from before
+-- 0.5.0 it says where the usage went: the bar shows it only once its widgets are placed.
 function M.greet(cx: any)
 	local seen = kv("seen_version")
 	if seen == M.VERSION then
@@ -106,14 +108,26 @@ function M.greet(cx: any)
 	end
 	tern.kv.set("seen_version", M.VERSION)
 	if seen ~= nil then
-		cx:toast("success", string.format(config.labels.updated, M.VERSION), config.labels.whats_new)
+		local sub = if M.newer("0.5.0", seen) then config.labels.widgets_moved else config.labels.whats_new
+		cx:toast("success", string.format(config.labels.updated, M.VERSION), sub)
 	end
 end
 
-function M.segments(out: { any })
-	if latest and M.available() then
-		table.insert(out, { text = "⬆ " .. latest.version, command = P .. "update" })
-	end
+-- The ⬆ widget, shown while a newer release waits; register it again after a language change for its name.
+function M.widget()
+	tern.chrome.widget("update", {
+		name = config.labels.w_update,
+		description = config.labels.w_update_desc,
+		render = function()
+			if latest and M.available() then
+				local L = config.labels
+				-- Each `Key: value` line is a row of Tern's hover card (see `card` in usage.luau).
+				local title = string.format("%s: %s\n%s: %s\n%s", L.k_new_version, latest.version, L.k_installed, M.VERSION, L.update_click)
+				return { text = "⬆ " .. latest.version, tone = "accent", title = title, command = P .. "update" }
+			end
+			return nil
+		end,
+	})
 end
 
 function M.init()

@@ -9,6 +9,7 @@ local release: any = { tag_name = "v0.5.0", html_url = "https://github.com/joaod
 local status = 200
 local ran: { string }? = nil
 
+local widgets: { [string]: any } = {}
 local fake = {
 	kv = {
 		get = function(key: string)
@@ -46,7 +47,12 @@ local fake = {
 			ran = argv
 		end,
 	},
-	chrome = { refresh = function() end },
+	chrome = {
+		refresh = function() end,
+		widget = function(id: string, spec: any)
+			widgets[id] = spec
+		end,
+	},
 	command = function() end,
 	plugin = { data = "DATA" },
 }
@@ -60,6 +66,7 @@ local update_env: any = getfenv(update.check)
 update_env.tern = fake
 config.load()
 update.init()
+update.widget()
 
 local function expect(cond: boolean, msg: string)
 	if not cond then
@@ -75,9 +82,8 @@ local cx = {
 }
 
 local function bar(): string
-	local out = {}
-	update.segments(out)
-	return if out[1] then out[1].text else ""
+	local v = widgets.update.render(nil)
+	return if v then v.text else ""
 end
 
 expect(update.VERSION == "0.4.0", "the version comes from plugin.toml")
@@ -91,7 +97,7 @@ expect(fetches == 0, "updates start off: no request")
 expect(bar() == "", "updates start off: no ⬆")
 config.answer.part("updates")
 
--- A newer release: the ⬆ segment and one toast.
+-- A newer release: the ⬆ widget and one toast.
 update.check(false, cx)
 expect(fetches == 1, "the first check asks GitHub")
 expect(bar() == "⬆ 0.5.0", "a newer release shows ⬆ with its version, got: " .. bar())
@@ -139,7 +145,8 @@ expect(ran == nil, "the update does not start an upstream reinstall")
 expect(toasts[#toasts][1] == "info", "the managed update shows guidance")
 expect(string.find(toasts[#toasts][3], "sync.ps1", 1, true) ~= nil, "the guidance names the sync command")
 
--- After an update the new version says so once; a first install stays quiet.
+-- After an update the new version says so once; a first install stays quiet. Coming from before 0.5.0 the toast
+-- says the usage moved to widgets; from 0.5.0 on it points to what's new.
 toasts = {}
 store.seen_version = nil
 update.greet(cx)
@@ -147,7 +154,11 @@ expect(#toasts == 0 and store.seen_version == "0.4.0", "a first install shows no
 store.seen_version = "0.3.1"
 update.greet(cx)
 expect(#toasts == 1 and toasts[1][2] == "OMP usage updated to 0.4.0", "an update shows its version")
+expect(toasts[1][3] == config.labels.widgets_moved, "from before 0.5.0 it says where the usage went")
 update.greet(cx)
 expect(#toasts == 1, "the update toast shows once")
+store.seen_version = "0.5.0"
+update.greet(cx)
+expect(toasts[2] and toasts[2][3] == config.labels.whats_new, "from 0.5.0 on it points to what's new")
 
 print("update_test: ok")

@@ -3,19 +3,11 @@ local LABELS = require("./labels")
 
 local M = {}
 
--- Parts of the bar the palette can hide, with their default; a new feature that starts off gets `false`.
+-- What the palette can turn off, with its default; a new feature that starts off gets `false`. What the bar shows is
+-- the widgets placed in Tern's widget bar (palette › Edit widgets…), so it isn't a setting here.
 M.PARTS = {
-	claude = true,
-	codex = true,
-	today = true,
-	cost = true,
-	budget = true,
-	reset = true,
-	credits = true,
-	fable = true,
 	updates = false, -- this fork is updated by `sync.ps1`; the check would announce the original plugin's releases
 	alerts = true,
-	forecast = true,
 }
 M.LANGUAGES = { "en", "pt-BR", "es", "zh-CN", "ja", "de", "fr" }
 
